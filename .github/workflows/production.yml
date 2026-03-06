@@ -5,24 +5,28 @@ on:
     tags:
     - v*
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   types:
-    uses: spuxx-dev/ci-cd/.github/workflows/npm_types.yml@v4.1.0
+    uses: potber/.github/.github/workflows/npm_types.yml@v1
 
   lint:
-    uses: spuxx-dev/ci-cd/.github/workflows/npm_lint.yml@v4.1.0
+    uses: potber/.github/.github/workflows/npm_lint.yml@v1
 
   test:
-    uses: spuxx-dev/ci-cd/.github/workflows/npm_test-coverage.yml@v4.1.0
+    uses: potber/.github/.github/workflows/npm_test-coverage.yml@v1
 
   release_image:
     needs:
     - types
     - lint
     - test
-    uses: spuxx-dev/ci-cd/.github/workflows/docker_release_image.yml@v4.1.0
+    permissions:
+      contents: read
+      packages: write
+    uses: potber/.github/.github/workflows/release_image.yml@v1
     with:
       latest: true
-    secrets:
-      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-

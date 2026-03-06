@@ -4,7 +4,7 @@
   "description": "A modern JSON API for forum.mods.de",
   "author": "https://spuxx.dev",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL-3.0-only",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

@@ -12,9 +12,9 @@ export const swaggerConfig = new DocumentBuilder()
   .setContact('Ameisenfutter', 'https://spuxx.dev', 'hi@spuxx.dev')
   .setLicense(
     'GNU licensed',
-    'https://github.com/spuxx-dev/potber-api/blob/main/LICENSE',
+    'https://github.com/potber/potber-api/blob/main/LICENSE',
   )
-  .setExternalDoc('README', 'https://github.com/spuxx-dev/potber-api#readme')
+  .setExternalDoc('README', 'https://github.com/potber/potber-api#readme')
   .addBearerAuth(
     {
       type: 'http',

@@ -9,7 +9,7 @@ export class AppController {
   @ApiOperation({
     summary: 'Returns the root document. Contains information about the API.',
     description: `Returns the root document. Contains information about the API.
-    
+
     🔓 Open Access`,
   })
   @ApiOkResponse({
@@ -24,7 +24,7 @@ export class AppController {
         website: 'https://www.spuxx.dev',
         github: 'https://www.github.com/spuxx-dev',
       },
-      github: 'https://www.github.com/spuxx-dev/potber-api',
+      github: 'https://www.github.com/potber/potber-api',
       client: process.env.APP_CLIENT_URL,
       documentation: `${process.env.APP_API_URL}${swaggerUri}`,
       documentationJson: `${process.env.APP_API_URL}${swaggerUri}-json`,
@@ -38,7 +38,7 @@ export class AppController {
   @ApiOperation({
     summary: 'Returns the current health of the API.',
     description: `Returns the current health of the API. This is mainly used by kubernetes to check the server's status, but it can  also be used by clients to do the same.
-    
+
     🔓 Open Access`,
   })
   @ApiOkResponse({
