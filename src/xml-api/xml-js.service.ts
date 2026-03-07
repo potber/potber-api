@@ -1,8 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { xml2js, Element as XmlJsElement } from 'xml-js';
+import { XMLParser } from 'fast-xml-parser';
 
-// Re-export Element interface for easier access
-export type Element = XmlJsElement;
+export interface Element {
+  type?: 'document' | 'element' | 'cdata' | 'text';
+  name?: string;
+  attributes?: Record<string, string>;
+  elements?: Element[];
+  cdata?: string;
+  text?: string;
+}
+
+type OrderedXmlNode = {
+  [key: string]:
+    | OrderedXmlNode[]
+    | Record<string, string>
+    | string
+    | undefined;
+};
+
+const parser = new XMLParser({
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  parseTagValue: false,
+  parseAttributeValue: false,
+  trimValues: true,
+  cdataPropName: 'cdata',
+  textNodeName: 'text',
+  ignoreDeclaration: true,
+  ignorePiTags: true,
+});
 
 /**
  * The XmlJsService provides tools to transform the forum's XML objects into JavaScript objects
@@ -15,8 +42,14 @@ export class XmlJsService {
    * @param text The text.
    * @returns The XmlJs element.
    */
-  parseXml(text: string) {
-    return xml2js(text, { compact: false }) as Element;
+  parseXml(text: string): Element {
+    const orderedNodes = parser.parse(text) as OrderedXmlNode[];
+    return {
+      type: 'document',
+      elements: orderedNodes
+        .map((node) => this.normalizeNode(node))
+        .filter((node): node is Element => Boolean(node)),
+    };
   }
 
   /**
@@ -61,5 +94,58 @@ export class XmlJsService {
       return element.attributes[attributeName] as string;
     }
     return undefined;
+  }
+
+  private normalizeNode(node: OrderedXmlNode): Element | undefined {
+    const [nodeName] = Object.keys(node).filter((key) => key !== ':@');
+    if (!nodeName) return undefined;
+
+    if (nodeName === 'text') {
+      const text = node.text;
+      return typeof text === 'string' ? { type: 'text', text } : undefined;
+    }
+
+    if (nodeName === 'cdata') {
+      return {
+        type: 'cdata',
+        cdata: this.extractTextValue(node.cdata),
+      };
+    }
+
+    const childNodes = node[nodeName];
+    const attributes = node[':@'];
+    const normalizedChildren = Array.isArray(childNodes)
+      ? childNodes
+          .map((child) => this.normalizeNode(child))
+          .filter((child): child is Element => Boolean(child))
+      : undefined;
+
+    return {
+      type: 'element',
+      name: nodeName,
+      attributes:
+        attributes && !Array.isArray(attributes)
+          ? (attributes as Record<string, string>)
+          : undefined,
+      elements:
+        normalizedChildren && normalizedChildren.length > 0
+          ? normalizedChildren
+          : undefined,
+    };
+  }
+
+  private extractTextValue(
+    value: OrderedXmlNode[] | Record<string, string> | string | undefined,
+  ): string {
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) {
+      return value
+        .map((entry) => {
+          if (typeof entry.text === 'string') return entry.text;
+          return '';
+        })
+        .join('');
+    }
+    return '';
   }
 }
