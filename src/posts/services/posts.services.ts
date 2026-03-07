@@ -238,8 +238,8 @@ export class PostsService {
         this.xmljs.getElement('in-board', postXml),
       ),
       avatarUrl: parseAvatarUrl(this.xmljs.getElementCdata('avatar', postXml)),
+      contentHidden: !!this.xmljs.getAttribute('is-hidden', postXml),
     } as PostReadResource;
-    post.contentHidden = !post.message;
     if (post.message)
       post.message = this.encodingService.decodeText(post.message);
     if (post.title) post.title = this.encodingService.decodeText(post.title);

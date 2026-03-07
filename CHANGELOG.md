@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.3.0] - 2026-03-08
+
+### Fixed
+
+- Hide posts based on the `is-hidden` attribute
+- Allow parsing of whitespace only posts
+
 ## [3.2.0] - 2024-10-16
 
 ### Chores
