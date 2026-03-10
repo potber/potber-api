@@ -15,6 +15,34 @@ describe('Threads | e2e', () => {
     });
   });
 
+  describe('GET /threads/:id', () => {
+    it('should omit richMessage by default', async () => {
+      container.mockServer.use(...threadsHandlers.findById.success);
+      const request = fakeRequest(container.app, 'GET', '/threads/219501');
+      const response = await request.send();
+
+      expect(response.status).toBe(200);
+      expect(response.body.page.posts[0]).not.toHaveProperty('richMessage');
+    });
+
+    it('should include richMessage when requested', async () => {
+      container.mockServer.use(...threadsHandlers.findById.success);
+      const request = fakeRequest(
+        container.app,
+        'GET',
+        '/threads/219501?include=richMessage',
+      );
+      const response = await request.send();
+
+      expect(response.status).toBe(200);
+      expect(response.body.page.posts[0]).toHaveProperty('richMessage');
+      expect(response.body.page.posts[0].richMessage).toEqual({
+        version: 1,
+        nodes: [{ type: 'text', value: 'das ist der startpost' }],
+      });
+    });
+  });
+
   describe('POST /threads', () => {
     it('should successfully create a new thread', async () => {
       container.mockServer.use(...threadsHandlers.create.success);

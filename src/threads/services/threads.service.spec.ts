@@ -112,5 +112,29 @@ describe('Threads | ThreadsService', () => {
       };
       expect(actual).toEqual(expected);
     });
+
+    it('Should optionally include richMessage.', () => {
+      const actual = threadsService.transformThread(
+        xmljs.parseXml(threadXmlMockData.full).elements[0],
+        {
+          includeRichMessage: true,
+        },
+      );
+
+      expect(actual.page?.posts[0]).toMatchObject({
+        id: '1249813752',
+        richMessage: {
+          version: 1,
+          nodes: [{ type: 'text', value: 'Hello World!' }],
+        },
+      });
+      expect(actual.page?.posts[1]).toMatchObject({
+        id: '1249813756',
+        richMessage: {
+          version: 1,
+          nodes: [{ type: 'text', value: 'Hello Ameisenfutter!' }],
+        },
+      });
+    });
   });
 });

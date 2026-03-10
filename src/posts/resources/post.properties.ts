@@ -48,6 +48,22 @@ export const postProperties = {
     example: 'Geposted mit potber-api! ❤',
   } as ApiPropertyOptions,
 
+  richMessage: {
+    description:
+      "A structured representation of the post message that can be rendered without re-parsing BBCode on the client. Only returned when 'include=richMessage' was requested on supported read routes.",
+    required: false,
+    type: 'object',
+    example: {
+      version: 1,
+      nodes: [
+        {
+          type: 'bold',
+          children: [{ type: 'text', value: 'Geposted mit potber-api!' }],
+        },
+      ],
+    },
+  } as ApiPropertyOptions,
+
   contentHidden: {
     description:
       'Whether the post content (icon, title and message) was hidden by a moderator.',

@@ -4,6 +4,17 @@ import { readHandlerMockFile } from 'test/helpers/test-utils';
 import { parseFormData } from 'test/msw/parse-form-data';
 
 export const threadsHandlers = {
+  findById: {
+    success: [
+      rest.get(`${forumConfig.API_URL}thread.php`, (req, res, ctx) => {
+        if (!req.url.searchParams.get('TID')) return res(ctx.status(404));
+        return res(
+          ctx.status(200),
+          ctx.text(readHandlerMockFile('threads/create/thread.xml')),
+        );
+      }),
+    ],
+  },
   create: {
     success: [
       rest.get(`${forumConfig.FORUM_URL}newthread.php`, (req, res, ctx) => {

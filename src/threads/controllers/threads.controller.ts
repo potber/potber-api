@@ -74,6 +74,14 @@ export class ThreadsController {
     required: false,
     type: Boolean,
   })
+  @ApiQuery({
+    name: 'include',
+    description:
+      "Optional expansions. Use 'richMessage' to include the structured content for posts on the returned page.",
+    required: false,
+    example: 'richMessage',
+    type: String,
+  })
   @ApiOkResponse({
     description: 'The given thread.',
     type: ThreadReadResource,
@@ -86,6 +94,7 @@ export class ThreadsController {
   ): Promise<ThreadReadResource> {
     return this.service.findById(id, request.user, {
       ...query,
+      includeRichMessage: query.includeRichMessage,
     });
   }
 

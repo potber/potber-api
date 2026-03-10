@@ -2,6 +2,7 @@ import { TestContainer, createTestContainer } from 'test/container';
 import { PostsModule } from './posts.module';
 import { postsHandlers } from 'test/msw/handlers/posts/posts.handlers';
 import { fakeRequest } from 'test/helpers/fake-request';
+import { threadsHandlers } from 'test/msw/handlers/threads/threads.handlers';
 
 describe('Posts | e2e', () => {
   let container: TestContainer;
@@ -10,6 +11,37 @@ describe('Posts | e2e', () => {
     container = await createTestContainer({
       imports: [PostsModule],
       enableEndToEnd: true,
+    });
+  });
+
+  describe('GET :id', () => {
+    it('should omit richMessage by default', async () => {
+      container.mockServer.use(...threadsHandlers.findById.success);
+      const request = fakeRequest(
+        container.app,
+        'GET',
+        '/posts/1250038718?threadId=219501',
+      );
+      const response = await request.send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).not.toHaveProperty('richMessage');
+    });
+
+    it('should include richMessage when requested', async () => {
+      container.mockServer.use(...threadsHandlers.findById.success);
+      const request = fakeRequest(
+        container.app,
+        'GET',
+        '/posts/1250038718?threadId=219501&include=richMessage',
+      );
+      const response = await request.send();
+
+      expect(response.status).toBe(200);
+      expect(response.body.richMessage).toEqual({
+        version: 1,
+        nodes: [{ type: 'text', value: 'das ist der startpost' }],
+      });
     });
   });
 

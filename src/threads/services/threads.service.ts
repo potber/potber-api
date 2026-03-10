@@ -39,6 +39,7 @@ export class ThreadsService {
       postId?: string;
       page?: number;
       updateBookmark?: boolean;
+      includeRichMessage?: boolean;
     },
   ): Promise<ThreadReadResource> {
     let url = `${ENDPOINT_URL}?TID=${id}`;
@@ -54,7 +55,9 @@ export class ThreadsService {
       cookie: session.cookie,
     });
     const threadXml = this.xmljs.parseXml(data);
-    const thread = this.transformThread(threadXml.elements[0]);
+    const thread = this.transformThread(threadXml.elements[0], {
+      includeRichMessage: options?.includeRichMessage,
+    });
     // If post id was specified, we need to check whether the thread page that we're returning actually
     // contains that post. If it doesn't, the thread doesn't contain a post with that post id and
     // we should raise a 404.
@@ -80,10 +83,16 @@ export class ThreadsService {
     threadId: string,
     postId: string,
     session: SessionResource,
+    options?: {
+      includeRichMessage?: boolean;
+    },
   ): Promise<PostReadResource> {
     // Since findById does all required checks, we can simply assume that we
     // receive the page and specific post at this point.
-    const thread = await this.findById(threadId, session, { postId });
+    const thread = await this.findById(threadId, session, {
+      postId,
+      includeRichMessage: options?.includeRichMessage,
+    });
     const post = (thread.page as ThreadPageResource).posts.find(
       (post) => post.id === postId,
     ) as PostReadResource;
@@ -95,7 +104,12 @@ export class ThreadsService {
    * @param threadXml The thread XML object.
    * @returns The thread resource.
    */
-  transformThread(threadXml: Element): ThreadReadResource {
+  transformThread(
+    threadXml: Element,
+    options?: {
+      includeRichMessage?: boolean;
+    },
+  ): ThreadReadResource {
     if (threadXml.name === 'invalid-thread') {
       throw threadsExceptions.findById.notFound;
     } else if (threadXml.name === 'no-access') {
@@ -140,7 +154,9 @@ export class ThreadsService {
       lastPost: this.postsService.transformPostPreview(
         this.xmljs.getElement('lastpost', threadXml),
       ),
-      page: this.transformThreadPage(this.xmljs.getElement('posts', threadXml)),
+      page: this.transformThreadPage(this.xmljs.getElement('posts', threadXml), {
+        includeRichMessage: options?.includeRichMessage,
+      }),
     } as ThreadReadResource;
     if (thread.title)
       thread.title = this.encodingService.decodeText(thread.title);
@@ -154,14 +170,23 @@ export class ThreadsService {
    * @param threadPageXml The thread page xml object.
    * @returns The thread page.
    */
-  transformThreadPage(threadPageXml: Element) {
+  transformThreadPage(
+    threadPageXml: Element,
+    options?: {
+      includeRichMessage?: boolean;
+    },
+  ) {
     if (!threadPageXml) return undefined;
     if (!threadPageXml.elements || threadPageXml.elements?.length === 0) {
       throw threadsExceptions.findById.notFound;
     }
     const posts: PostReadResource[] = [];
     for (const postXml of threadPageXml.elements) {
-      posts.push(this.postsService.transformPost(postXml as Element));
+      posts.push(
+        this.postsService.transformPost(postXml as Element, {
+          includeRichMessage: options?.includeRichMessage,
+        }),
+      );
     }
     return {
       number: parseInt(this.xmljs.getAttribute('page', threadPageXml)),
