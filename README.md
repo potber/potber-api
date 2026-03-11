@@ -42,7 +42,7 @@ To properly create and maintain a session, follow these steps:
 
 ### Prerequisites
 
-- Node.js `v20` (see [`.nvmrc`](./.nvmrc))
+- Node.js `v24` (see [`.nvmrc`](./.nvmrc))
 - npm
 
 ### Installation
