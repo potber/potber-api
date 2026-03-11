@@ -1,0 +1,21 @@
+name: npm-types
+
+on:
+  workflow_call:
+    inputs:
+      node-version-file:
+        required: false
+        type: string
+        default: '.nvmrc'
+
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ inputs.node-version-file }}
+          cache: npm
+      - run: npm ci
+      - run: npm run types
