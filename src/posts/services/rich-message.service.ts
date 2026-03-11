@@ -448,7 +448,7 @@ export class RichMessageService {
       return token.tail.slice(1);
     }
 
-    const match = rawContent.replace('&#58;', ':').match(URL_REGEX);
+    const match = rawContent.replaceAll('&#58;', ':').match(URL_REGEX);
     if (match?.[1]) return match[1];
     return rawContent;
   }
