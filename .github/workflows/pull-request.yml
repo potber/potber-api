@@ -6,16 +6,16 @@ on:
 
 jobs:
   types:
-    uses: ./.github/workflows/npm_types.yml
+    uses: potber/.github/.github/workflows/npm_types.yml@v2
     with:
       node-version-file: .nvmrc
 
   lint:
-    uses: ./.github/workflows/npm_lint.yml
+    uses: potber/.github/.github/workflows/npm_lint.yml@v2
     with:
       node-version-file: .nvmrc
 
   test:
-    uses: ./.github/workflows/npm_test-coverage.yml
+    uses: potber/.github/.github/workflows/npm_test-coverage.yml@v2
     with:
       node-version-file: .nvmrc
