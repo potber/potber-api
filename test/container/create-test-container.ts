@@ -11,8 +11,8 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionResource } from 'src/auth/resources/session.resource';
 import { ConfigModule } from '@nestjs/config';
-import { RequestHandler, rest } from 'msw';
-import { SetupServer } from 'msw/node';
+import { RequestHandler } from 'msw';
+import { SetupServerApi } from 'msw/node';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -45,7 +45,7 @@ export async function createTestContainer(options: {
   logger?: LoggerService;
   mockSession?: Partial<SessionResource> | false;
   enableEndToEnd?: boolean;
-  requestHandlers?: RequestHandler<any>[];
+  requestHandlers?: RequestHandler[];
   disableDefaultConfig?: boolean;
 }) {
   const {
@@ -61,11 +61,7 @@ export async function createTestContainer(options: {
     imports: [],
     providers: [],
     controllers: [],
-    requestHandlers: [
-      rest.get('dummy-handler', (req, res, ctx) => {
-        return res(ctx.status(200));
-      }),
-    ],
+    requestHandlers: [],
     mockSession: { ...defaultMockSession },
     ...options,
   };
@@ -118,7 +114,7 @@ export async function createTestContainer(options: {
   const module = await builder.compile();
 
   let app: INestApplication | undefined;
-  let mockServer: SetupServer | undefined;
+  let mockServer: SetupServerApi | undefined;
   if (enableEndToEnd) {
     app = await createEndToEndNestApplication(module);
     mockServer = createMockServer(requestHandlers);

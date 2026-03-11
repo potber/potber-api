@@ -1,34 +1,34 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { forumConfig } from 'src/config/forum.config';
 import { readHandlerMockFile } from 'test/helpers/test-utils';
 
 export const postsHandlers = {
   report: {
     success: [
-      rest.post(`${forumConfig.FORUM_URL}reportpost.php`, (req, res, ctx) => {
+      http.post(`${forumConfig.FORUM_URL}reportpost.php`, () => {
         const html = readHandlerMockFile('posts/report/report.success.html');
-        return res(ctx.status(200), ctx.text(html));
+        return HttpResponse.text(html, { status: 200 });
       }),
     ],
     notFound: [
-      rest.post(`${forumConfig.FORUM_URL}reportpost.php`, (req, res, ctx) => {
+      http.post(`${forumConfig.FORUM_URL}reportpost.php`, () => {
         const html = readHandlerMockFile(
           'posts/report/report.failure-not-found.html',
         );
-        return res(ctx.status(200), ctx.text(html));
+        return HttpResponse.text(html, { status: 200 });
       }),
     ],
     alreadyReported: [
-      rest.post(`${forumConfig.FORUM_URL}reportpost.php`, (req, res, ctx) => {
+      http.post(`${forumConfig.FORUM_URL}reportpost.php`, () => {
         const html = readHandlerMockFile(
           'posts/report/report.failure-already-reported.html',
         );
-        return res(ctx.status(200), ctx.text(html));
+        return HttpResponse.text(html, { status: 200 });
       }),
     ],
     unknownFailure: [
-      rest.post(`${forumConfig.FORUM_URL}reportpost.php`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.text('foo bar'));
+      http.post(`${forumConfig.FORUM_URL}reportpost.php`, () => {
+        return HttpResponse.text('foo bar', { status: 200 });
       }),
     ],
   },

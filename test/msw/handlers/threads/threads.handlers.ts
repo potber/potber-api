@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { forumConfig } from 'src/config/forum.config';
 import { readHandlerMockFile } from 'test/helpers/test-utils';
 import { parseFormData } from 'test/msw/parse-form-data';
@@ -6,59 +6,57 @@ import { parseFormData } from 'test/msw/parse-form-data';
 export const threadsHandlers = {
   create: {
     success: [
-      rest.get(`${forumConfig.FORUM_URL}newthread.php`, (req, res, ctx) => {
-        if (!req.url.searchParams.get('BID')) return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(readHandlerMockFile('threads/create/token.html')),
+      http.get(`${forumConfig.FORUM_URL}newthread.php`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (!searchParams.get('BID'))
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('threads/create/token.html'),
+          { status: 200 },
         );
       }),
-      rest.post(
+      http.post(
         `${forumConfig.FORUM_URL}newthread.php`,
-        async (req, res, ctx) => {
-          const body = await parseFormData(req);
+        async ({ request }) => {
+          const body = await parseFormData(request);
           if (!body['BID']) {
-            return res(
-              ctx.status(200),
-              ctx.text(
-                readHandlerMockFile('threads/create/missing-board-id.html'),
-              ),
+            return HttpResponse.text(
+              readHandlerMockFile('threads/create/missing-board-id.html'),
+              { status: 200 },
             );
           } else if (!body['thread_title']) {
-            return res(
-              ctx.status(200),
-              ctx.text(
-                readHandlerMockFile('threads/create/missing-title.html'),
-              ),
+            return HttpResponse.text(
+              readHandlerMockFile('threads/create/missing-title.html'),
+              { status: 200 },
             );
           } else if (!body['message']) {
-            return res(
-              ctx.status(200),
-              ctx.text(
-                readHandlerMockFile('threads/create/missing-message.html'),
-              ),
+            return HttpResponse.text(
+              readHandlerMockFile('threads/create/missing-message.html'),
+              { status: 200 },
             );
           } else {
-            return res(
-              ctx.status(200),
-              ctx.text(readHandlerMockFile('threads/create/success.html')),
+            return HttpResponse.text(
+              readHandlerMockFile('threads/create/success.html'),
+              { status: 200 },
             );
           }
         },
       ),
-      rest.get(`${forumConfig.API_URL}thread.php`, (req, res, ctx) => {
-        if (!req.url.searchParams.get('TID')) return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(readHandlerMockFile('threads/create/thread.xml')),
+      http.get(`${forumConfig.API_URL}thread.php`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (!searchParams.get('TID'))
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('threads/create/thread.xml'),
+          { status: 200 },
         );
       }),
     ],
     forbidden: [
-      rest.get(`${forumConfig.FORUM_URL}newthread.php`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.text(readHandlerMockFile('threads/create/token-forbidden.html')),
+      http.get(`${forumConfig.FORUM_URL}newthread.php`, () => {
+        return HttpResponse.text(
+          readHandlerMockFile('threads/create/token-forbidden.html'),
+          { status: 200 },
         );
       }),
     ],

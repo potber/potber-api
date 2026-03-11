@@ -6,8 +6,16 @@ const config: Config = {
   modulePaths: ['<rootDir>'],
   testRegex: '.*\\.(?:spec|test)\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          allowJs: true,
+        },
+      },
+    ],
   },
+  transformIgnorePatterns: ['/node_modules/(?!(msw|until-async)/)'],
   collectCoverageFrom: ['src/**/*.(t|j)s', 'src/*app*.(t|j)s'],
   coverageDirectory: '../coverage',
   modulePathIgnorePatterns: [

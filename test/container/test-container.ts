@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
-import { SetupServer } from 'msw/lib/node';
+import { SetupServerApi } from 'msw/node';
 import { SessionResource } from 'src/auth/resources/session.resource';
 
 /**
@@ -17,7 +17,7 @@ export class TestContainer {
 
   module: TestingModule;
   app?: INestApplication;
-  mockServer?: SetupServer;
+  mockServer?: SetupServerApi;
   session?: SessionResource;
 
   protected constructor(init: Partial<TestContainer>) {
