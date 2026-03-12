@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { XmlApiModule } from 'src/xml-api/xml-api.module';
 import { PostsController } from './controllers/posts.controller';
 import { PostsService } from './services/posts.services';
+import { RichMessageService } from './services/rich-message.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { PostsService } from './services/posts.services';
     forwardRef(() => ThreadsModule),
   ],
   exports: [PostsService],
-  providers: [PostsService],
+  providers: [PostsService, RichMessageService],
   controllers: [PostsController],
 })
 export class PostsModule {}

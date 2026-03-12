@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserResource } from 'src/users/resources/user.resource';
 import { postProperties } from './post.properties';
+import { RichMessageDocument } from '../types/rich-message';
 
 export class PostReadResource {
   @ApiProperty(postProperties.id)
@@ -26,6 +27,9 @@ export class PostReadResource {
 
   @ApiProperty(postProperties.message)
   message?: string;
+
+  @ApiProperty(postProperties.richMessage)
+  richMessage?: RichMessageDocument;
 
   @ApiProperty(postProperties.contentHidden)
   contentHidden?: boolean;

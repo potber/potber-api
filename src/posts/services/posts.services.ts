@@ -12,6 +12,7 @@ import { ThreadsService } from 'src/threads/services/threads.service';
 import { EncodingService } from 'src/encoding/encoding.service';
 import { parseAvatarUrl } from 'src/utility/forum.utility';
 import { PostQuoteResource } from '../resources/post.quote.resource';
+import { RichMessageService } from './rich-message.service';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +21,7 @@ export class PostsService {
     private readonly httpService: HttpService,
     private readonly xmljs: XmlJsService,
     private readonly usersService: UsersService,
+    private readonly richMessageService: RichMessageService,
     @Inject(forwardRef(() => ThreadsService))
     private readonly threadsService: ThreadsService,
   ) {}
@@ -35,8 +37,13 @@ export class PostsService {
     id: string,
     threadId: string,
     session: SessionResource,
+    options?: {
+      includeRichMessage?: boolean;
+    },
   ): Promise<PostReadResource> {
-    return this.threadsService.findPost(threadId, id, session);
+    return this.threadsService.findPost(threadId, id, session, {
+      includeRichMessage: options?.includeRichMessage,
+    });
   }
 
   /**
@@ -191,7 +198,12 @@ export class PostsService {
    * @param postXml The post XML object.
    * @returns The post resource.
    */
-  transformPost(postXml: Element) {
+  transformPost(
+    postXml: Element,
+    options?: {
+      includeRichMessage?: boolean;
+    },
+  ) {
     const post = {
       id: this.xmljs.getAttribute('id', postXml),
       author: this.usersService.transformUser(
@@ -240,8 +252,14 @@ export class PostsService {
       avatarUrl: parseAvatarUrl(this.xmljs.getElementCdata('avatar', postXml)),
       contentHidden: !!this.xmljs.getAttribute('is-hidden', postXml),
     } as PostReadResource;
-    if (post.message)
+    if (typeof post.message === 'string') {
       post.message = this.encodingService.decodeText(post.message);
+      if (options?.includeRichMessage) {
+        post.richMessage = this.richMessageService.parse(post.message, {
+          groupId: post.author.groupId,
+        });
+      }
+    }
     if (post.title) post.title = this.encodingService.decodeText(post.title);
     return post;
   }

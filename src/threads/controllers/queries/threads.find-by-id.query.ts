@@ -3,6 +3,7 @@ import {
   IsNumber,
   IsNumberString,
   IsOptional,
+  IsString,
   Min,
 } from 'class-validator';
 import { TransformBooleanString } from 'src/utility/transformers/boolean-string.transformer';
@@ -21,4 +22,15 @@ export class ThreadsFindByIdQuery {
   @IsBoolean()
   @IsOptional()
   updateBookmark: boolean;
+
+  @IsString()
+  @IsOptional()
+  include?: string;
+
+  get includeRichMessage() {
+    return this.include
+      ?.split(',')
+      .map((value) => value.trim())
+      .includes('richMessage');
+  }
 }

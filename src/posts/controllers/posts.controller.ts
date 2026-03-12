@@ -57,6 +57,14 @@ export class PostsController {
     example: '219289',
     type: String,
   })
+  @ApiQuery({
+    name: 'include',
+    description:
+      "Optional expansions. Use 'richMessage' to include the structured post content.",
+    required: false,
+    example: 'richMessage',
+    type: String,
+  })
   @ApiOkResponse({
     description: 'The post.',
     type: PostReadResource,
@@ -67,7 +75,9 @@ export class PostsController {
     @Request() request: any,
     @Query() query: PostsFindByIdQuery,
   ): Promise<PostReadResource> {
-    return this.service.findById(id, query.threadId, request.user);
+    return this.service.findById(id, query.threadId, request.user, {
+      includeRichMessage: query.includeRichMessage,
+    });
   }
 
   @Get(':id/quote')
