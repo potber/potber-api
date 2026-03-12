@@ -42,7 +42,6 @@ export class AuthController {
   })
   @ApiOkResponse({
     description: 'Successful login response containing the JWT (access_token).',
-    status: 200,
     type: JwtResource,
   })
   @ApiException(() => Object.values(authExceptions.login))

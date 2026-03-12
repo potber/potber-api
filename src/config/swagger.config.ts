@@ -1,5 +1,4 @@
 import { DocumentBuilder } from '@nestjs/swagger';
-import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 
 export const swaggerUri = '/swagger';
 
@@ -27,6 +26,6 @@ export const swaggerConfig = new DocumentBuilder()
   )
   .build();
 
-export const swaggerOptions: SwaggerUiOptions = {
+export const swaggerOptions = {
   persistAuthorization: true,
 };

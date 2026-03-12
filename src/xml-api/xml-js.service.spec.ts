@@ -29,7 +29,9 @@ describe('XmlJsService', () => {
       `<thread><title><![CDATA[Foo]]></title></thread>`,
     );
 
-    expect(service.getElementCdata('title', document.elements?.[0])).toBe('Foo');
+    expect(service.getElementCdata('title', document.elements?.[0])).toBe(
+      'Foo',
+    );
   });
 
   it('should preserve empty CDATA content instead of treating it as missing', () => {

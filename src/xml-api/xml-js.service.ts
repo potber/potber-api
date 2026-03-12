@@ -11,11 +11,7 @@ export interface Element {
 }
 
 type OrderedXmlNode = {
-  [key: string]:
-    | OrderedXmlNode[]
-    | Record<string, string>
-    | string
-    | undefined;
+  [key: string]: OrderedXmlNode[] | Record<string, string> | string | undefined;
 };
 
 const parser = new XMLParser({

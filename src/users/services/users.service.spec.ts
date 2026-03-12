@@ -39,7 +39,7 @@ describe('Users | UsersService', () => {
       const input = 'Benutzer 1179058 1179058 nicht gefunden!';
       expect(() => {
         usersService.extractUserProfile(id, input);
-      }).toThrowError(NotFoundException);
+      }).toThrow(NotFoundException);
     });
   });
 

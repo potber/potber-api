@@ -1,83 +1,73 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { forumConfig } from 'src/config/forum.config';
 import { readHandlerMockFile } from 'test/helpers/test-utils';
 
 export const privateMessagesHandlers = {
   send: {
     success: [
-      rest.post(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        if (req.url.searchParams.get('a') !== '6') return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(readHandlerMockFile('private-messages/send/success.html')),
+      http.post(`${forumConfig.FORUM_URL}pm`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (searchParams.get('a') !== '6')
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('private-messages/send/success.html'),
+          { status: 200 },
         );
       }),
     ],
     invalidUser: [
-      rest.post(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        if (req.url.searchParams.get('a') !== '6') return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(
-            readHandlerMockFile('private-messages/send/invalid-user.html'),
-          ),
+      http.post(`${forumConfig.FORUM_URL}pm`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (searchParams.get('a') !== '6')
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('private-messages/send/invalid-user.html'),
+          { status: 200 },
         );
       }),
     ],
     unknown: [
-      rest.post(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        if (req.url.searchParams.get('a') !== '6') return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(readHandlerMockFile('private-messages/send/unknown.html')),
+      http.post(`${forumConfig.FORUM_URL}pm`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (searchParams.get('a') !== '6')
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('private-messages/send/unknown.html'),
+          { status: 200 },
         );
       }),
     ],
   },
   replyOrForward: {
     success: [
-      rest.get(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        if (
-          req.url.searchParams.get('a') !== '5' ||
-          !req.url.searchParams.get('reply')
-        )
-          return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(
-            readHandlerMockFile(
-              'private-messages/reply-or-forward/success.html',
-            ),
-          ),
+      http.get(`${forumConfig.FORUM_URL}pm`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (searchParams.get('a') !== '5' || !searchParams.get('reply'))
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile('private-messages/reply-or-forward/success.html'),
+          { status: 200 },
         );
       }),
     ],
     notFound: [
-      rest.get(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        if (
-          req.url.searchParams.get('a') !== '5' ||
-          !req.url.searchParams.get('reply')
-        )
-          return res(ctx.status(404));
-        return res(
-          ctx.status(200),
-          ctx.text(
-            readHandlerMockFile(
-              'private-messages/reply-or-forward/not-found.html',
-            ),
+      http.get(`${forumConfig.FORUM_URL}pm`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        if (searchParams.get('a') !== '5' || !searchParams.get('reply'))
+          return new HttpResponse(null, { status: 404 });
+        return HttpResponse.text(
+          readHandlerMockFile(
+            'private-messages/reply-or-forward/not-found.html',
           ),
+          { status: 200 },
         );
       }),
     ],
     unknown: [
-      rest.get(`${forumConfig.FORUM_URL}pm`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.text(
-            readHandlerMockFile(
-              'private-messages/reply-or-forward/unknown.html',
-            ),
-          ),
+      http.get(`${forumConfig.FORUM_URL}pm`, () => {
+        return HttpResponse.text(
+          readHandlerMockFile('private-messages/reply-or-forward/unknown.html'),
+          { status: 200 },
         );
       }),
     ],
