@@ -1,16 +1,30 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+const config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: './',
   modulePaths: ['<rootDir>'],
   testRegex: '.*\\.(?:spec|test)\\.ts$',
   transform: {
     '^.+\\.(t|j)s$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        tsconfig: {
-          allowJs: true,
+        module: {
+          type: 'commonjs',
+          lazy: [
+            'src/posts/services/posts.services',
+            'src/threads/services/threads.service',
+          ],
+          noInterop: true,
+        },
+        jsc: {
+          target: 'es2021',
+          parser: {
+            syntax: 'typescript',
+            decorators: true,
+          },
+          transform: {
+            legacyDecorator: true,
+            decoratorMetadata: true,
+          },
         },
       },
     ],
