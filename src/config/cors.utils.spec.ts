@@ -9,11 +9,11 @@ describe('Config | cors.utils', () => {
     it('should trim empty entries', () => {
       expect(
         parseAllowedOrigins(
-          'https://test.potber.de, https://*.potber.kristofdreier.de,',
+          'https://test.potber.de, https://*.preview.potber.de,',
         ),
       ).toStrictEqual([
         'https://test.potber.de',
-        'https://*.potber.kristofdreier.de',
+        'https://*.preview.potber.de',
       ]);
     });
   });
@@ -31,8 +31,8 @@ describe('Config | cors.utils', () => {
     it('should match single-label wildcard preview origins', () => {
       expect(
         matchesAllowedOrigin(
-          'https://*.potber.kristofdreier.de',
-          'https://pr-17.potber.kristofdreier.de',
+          'https://*.preview.potber.de',
+          'https://pr-17.preview.potber.de',
         ),
       ).toBe(true);
     });
@@ -49,8 +49,8 @@ describe('Config | cors.utils', () => {
     it('should reject nested wildcard preview origins', () => {
       expect(
         matchesAllowedOrigin(
-          'https://*.potber.kristofdreier.de',
-          'https://foo.bar.potber.kristofdreier.de',
+          'https://*.preview.potber.de',
+          'https://foo.bar.preview.potber.de',
         ),
       ).toBe(false);
     });
@@ -58,8 +58,8 @@ describe('Config | cors.utils', () => {
     it('should reject mismatched ports', () => {
       expect(
         matchesAllowedOrigin(
-          'https://*.potber.kristofdreier.de',
-          'https://pr-17.potber.kristofdreier.de:8443',
+          'https://*.preview.potber.de',
+          'https://pr-17.preview.potber.de:8443',
         ),
       ).toBe(false);
     });
