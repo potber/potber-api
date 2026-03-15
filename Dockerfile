@@ -4,6 +4,8 @@ FROM node:24-alpine
 # Create app directory
 WORKDIR /usr/src/app
 
+RUN apk add python3 make g++
+
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
