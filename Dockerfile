@@ -20,4 +20,5 @@ RUN npm run build
 USER 1000
 
 # Start the server using the production build
-CMD [ "node", "dist/src/main.js" ]
+ENV NODE_OPTIONS="--enable-source-maps --require ./appsignal.cjs"
+CMD ["node", "dist/main"]
