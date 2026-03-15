@@ -9,7 +9,15 @@ export const httpConfig: HttpModuleOptions = {
 export function httpRequestInterceptor(
   config: InternalAxiosRequestConfig<any>,
 ) {
-  Logger.verbose(`Outgoing request to '${config.url}'.`, 'Axios');
+  Logger.verbose(
+    {
+      message: 'Outgoing request.',
+      method: config.method?.toUpperCase(),
+      url: config.url,
+    },
+    'Axios',
+  );
+
   return config;
 }
 

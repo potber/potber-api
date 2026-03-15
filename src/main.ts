@@ -11,9 +11,12 @@ import { Logger } from '@nestjs/common';
 import { ResponseLoggingInterceptor } from './log/response.logging.interceptor';
 import { AppConfig } from './config/app.config';
 import { CorsConfig } from './config/cors.config';
+import { createNestLogger } from './log/winston.logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: createNestLogger(),
+  });
 
   const configService = app.get(ConfigService);
   const appConfig = configService.get<ConfigType<AppConfig>>('application');
