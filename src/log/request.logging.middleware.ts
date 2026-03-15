@@ -1,7 +1,7 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { Counter } from 'prom-client';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {
@@ -9,7 +9,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
     @InjectMetric('http_requests_total') public counter: Counter<string>,
   ) {}
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: Request, _res: Response, next: NextFunction) {
     if (
       !req.originalUrl.startsWith('/metrics') &&
       !req.originalUrl.startsWith('/healthz')
@@ -17,7 +17,12 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       this.counter.inc();
 
       Logger.verbose(
-        `${req.method} ${req.originalUrl} (origin: ${req.header('origin')}).`,
+        {
+          message: 'Incoming request.',
+          method: req.method,
+          origin: req.header('origin'),
+          url: req.originalUrl,
+        },
         'Request',
       );
     }
