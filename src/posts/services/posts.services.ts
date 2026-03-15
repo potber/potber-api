@@ -1,4 +1,5 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { SessionResource } from 'src/auth/resources/session.resource';
 import { forumConfig } from 'src/config/forum.config';
 import { HttpService } from 'src/http/http.service';
@@ -8,21 +9,29 @@ import { postsExceptions } from '../config/posts.exceptions';
 import { PostWriteResource } from '../resources/post.write.resource';
 import { PostPreviewResource } from '../resources/post.preview.resource';
 import { PostReadResource } from '../resources/post.read.resource';
-import { ThreadsService } from 'src/threads/services/threads.service';
+import type { ThreadsService } from 'src/threads/services/threads.service';
 import { EncodingService } from 'src/encoding/encoding.service';
 import { parseAvatarUrl } from 'src/utility/forum.utility';
 import { PostQuoteResource } from '../resources/post.quote.resource';
+import { THREADS_SERVICE } from 'src/threads/threads.tokens';
 
 @Injectable()
-export class PostsService {
+export class PostsService implements OnModuleInit {
+  private threadsService: ThreadsService;
+
   constructor(
     private readonly encodingService: EncodingService,
     private readonly httpService: HttpService,
+    private readonly moduleRef: ModuleRef,
     private readonly xmljs: XmlJsService,
     private readonly usersService: UsersService,
-    @Inject(forwardRef(() => ThreadsService))
-    private readonly threadsService: ThreadsService,
   ) {}
+
+  onModuleInit() {
+    this.threadsService = this.moduleRef.get<ThreadsService>(THREADS_SERVICE, {
+      strict: false,
+    });
+  }
 
   /**
    * Wraps ThreadsService.findPost().

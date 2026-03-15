@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SessionResource } from 'src/auth/resources/session.resource';
 import { forumConfig } from 'src/config/forum.config';
 import { HttpService } from 'src/http/http.service';
@@ -22,7 +22,6 @@ export class ThreadsService {
     private readonly httpService: HttpService,
     private readonly xmljs: XmlJsService,
     private readonly encodingService: EncodingService,
-    @Inject(forwardRef(() => PostsService))
     private readonly postsService: PostsService,
   ) {}
 
