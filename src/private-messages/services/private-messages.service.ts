@@ -376,14 +376,17 @@ export class PrivateMessagesService {
     }
     const recipientNameRegex = /<input name='rcpt'[\s|\S]*?value="(.*?)".*>/i;
     const recipientNameMatches = html.match(recipientNameRegex);
+    const titleRegex = /<input name='subj'.*value='(.*)'>/i;
+    const titleMatches = html.match(titleRegex);
+    const contentRegex = /<textarea.*>([\s|\S]*)<\/textarea>/im;
+    const contentMatches = html.match(contentRegex);
+    if (!recipientNameMatches || !titleMatches || !contentMatches) {
+      throw privateMessagesExceptions.replyOrForward.unknownError;
+    }
     const recipientName = this.encodingService.decodeText(
       recipientNameMatches[1],
     );
-    const titleRegex = /<input name='subj'.*value='(.*)'>/i;
-    const titleMatches = html.match(titleRegex);
     const title = titleMatches[1];
-    const contentRegex = /<textarea.*>([\s|\S]*)<\/textarea>/im;
-    const contentMatches = html.match(contentRegex);
     const content = this.encodingService.decodeText(contentMatches[1]);
     const body: PrivateMessageSendResource = {
       recipientName: options?.includeRecipientName ? recipientName : '',

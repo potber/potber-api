@@ -1,4 +1,5 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { SessionResource } from 'src/auth/resources/session.resource';
 import { forumConfig } from 'src/config/forum.config';
 import { HttpService } from 'src/http/http.service';
@@ -8,21 +9,36 @@ import { postsExceptions } from '../config/posts.exceptions';
 import { PostWriteResource } from '../resources/post.write.resource';
 import { PostPreviewResource } from '../resources/post.preview.resource';
 import { PostReadResource } from '../resources/post.read.resource';
-import { ThreadsService } from 'src/threads/services/threads.service';
+import type { ThreadsService } from 'src/threads/services/threads.service';
 import { EncodingService } from 'src/encoding/encoding.service';
 import { parseAvatarUrl } from 'src/utility/forum.utility';
 import { PostQuoteResource } from '../resources/post.quote.resource';
+import { THREADS_SERVICE } from 'src/threads/threads.tokens';
 
 @Injectable()
 export class PostsService {
+  private threadsService: ThreadsService;
+
   constructor(
     private readonly encodingService: EncodingService,
     private readonly httpService: HttpService,
+    private readonly moduleRef: ModuleRef,
     private readonly xmljs: XmlJsService,
     private readonly usersService: UsersService,
-    @Inject(forwardRef(() => ThreadsService))
-    private readonly threadsService: ThreadsService,
   ) {}
+
+  private getThreadsService(): ThreadsService {
+    if (!this.threadsService) {
+      this.threadsService = this.moduleRef.get<ThreadsService>(
+        THREADS_SERVICE,
+        {
+          strict: false,
+        },
+      );
+    }
+
+    return this.threadsService;
+  }
 
   /**
    * Wraps ThreadsService.findPost().
@@ -36,7 +52,7 @@ export class PostsService {
     threadId: string,
     session: SessionResource,
   ): Promise<PostReadResource> {
-    return this.threadsService.findPost(threadId, id, session);
+    return this.getThreadsService().findPost(threadId, id, session);
   }
 
   /**
@@ -84,7 +100,11 @@ export class PostsService {
       cookie: session.cookie,
     });
     const { id, threadId } = this.processCreateOrEditResponse(data);
-    const result = await this.threadsService.findPost(threadId, id, session);
+    const result = await this.getThreadsService().findPost(
+      threadId,
+      id,
+      session,
+    );
     Logger.log(
       `User '${session.username}' (${session.userId}) has created post '${result.id}' in thread '${result.threadId}'.`,
       this.constructor.name,
@@ -108,7 +128,11 @@ export class PostsService {
       cookie: session.cookie,
     });
     const { threadId } = this.processCreateOrEditResponse(data);
-    const result = await this.threadsService.findPost(threadId, id, session);
+    const result = await this.getThreadsService().findPost(
+      threadId,
+      id,
+      session,
+    );
     Logger.log(
       `User '${session.username}' (${session.userId}) has edited post'${id}' in thread '${post.threadId}'.`,
       this.constructor.name,

@@ -13,7 +13,11 @@ export class PrivateMessageReadResource {
   @ApiProperty(privateMessageProperties.date)
   date: string;
 
-  @ApiProperty(privateMessageProperties.folder)
+  @ApiProperty({
+    ...privateMessageProperties.folder,
+    enum: PrivateMessageFolder,
+    enumName: 'PrivateMessageFolder',
+  })
   folder: PrivateMessageFolder;
 
   @ApiProperty(privateMessageProperties.unread)
