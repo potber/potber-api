@@ -4,8 +4,10 @@ import {
   Controller,
   Get,
   HttpCode,
+  Logger,
   Post,
   Request,
+  Res,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -22,12 +24,17 @@ import { JwtAuthGuard } from '../guards/jwt.guard';
 import { JwtResource } from '../resources/jwt.resource';
 import { LoginResource } from '../resources/login.resource';
 import { SessionResource } from '../resources/session.resource';
+import { LoginThrottleService } from '../services/login-throttle.service';
+import type { Request as ExpressRequest, Response } from 'express';
 
 @Controller('auth')
 @UsePipes(validationPipe)
 @ApiTags('Authentication')
 export class AuthController {
-  constructor(private readonly service: AuthService) {}
+  constructor(
+    private readonly service: AuthService,
+    private readonly loginThrottle: LoginThrottleService,
+  ) {}
 
   @Post('login')
   @HttpCode(200)
@@ -45,8 +52,35 @@ export class AuthController {
     type: JwtResource,
   })
   @ApiException(() => Object.values(authExceptions.login))
-  async login(@Body() loginResource: LoginResource): Promise<JwtResource> {
-    return this.service.login(loginResource);
+  async login(
+    @Body() loginResource: LoginResource,
+    @Request() request: ExpressRequest,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<JwtResource> {
+    const ip = request.ip || request.socket.remoteAddress || 'unknown';
+    const decision = this.loginThrottle.getDecision(ip, loginResource.username);
+    if (decision) {
+      response.setHeader('Retry-After', decision.retryAfterSeconds.toString());
+      Logger.warn(
+        `Login request rejected by ${decision.scope} throttle.`,
+        this.constructor.name,
+      );
+      throw authExceptions.login.rateLimited;
+    }
+
+    try {
+      const token = await this.service.login(loginResource);
+      this.loginThrottle.recordSuccess(loginResource.username);
+      return token;
+    } catch (error) {
+      if (
+        error === authExceptions.login.wrongCredentials ||
+        error === authExceptions.login.lockedPermanently
+      ) {
+        this.loginThrottle.recordFailure(ip, loginResource.username);
+      }
+      throw error;
+    }
   }
 
   @Get('session')
