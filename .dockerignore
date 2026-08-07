@@ -1,3 +1,13 @@
-node_modules
-dist
-.git
+*
+!.dockerignore
+!Dockerfile
+!package.json
+!package-lock.json
+!appsignal.cjs
+!nest-cli.json
+!tsconfig.json
+!tsconfig.build.json
+!src
+!src/**
+!test
+!test/**
