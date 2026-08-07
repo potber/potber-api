@@ -8,6 +8,18 @@ import { BookmarkCreateResource } from '../resources/bookmark.create.resource';
 import { BookmarkResource } from '../resources/bookmark.resource';
 import { BookmarksSummaryResource } from '../resources/bookmarks-summary.resource';
 
+const buildForumUrl = (
+  path: string,
+  parameters: Record<string, string>,
+): string => {
+  const url = new URL(path, forumConfig.FORUM_URL);
+  url.search = new URLSearchParams(parameters).toString();
+  return url.toString();
+};
+
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Bookmarks service class. Can return and transform the bookmarks summary and bookmarks, as well as delete bookmarks.
  */
@@ -128,7 +140,10 @@ export class BookmarksService {
       newBookmark.threadId,
       session,
     );
-    const url = `${forumConfig.FORUM_URL}async/set-bookmark.php?PID=${newBookmark.postId}&token=${token}`;
+    const url = buildForumUrl('async/set-bookmark.php', {
+      PID: newBookmark.postId,
+      token,
+    });
     const { data } = await this.httpService.get(url, {
       cookie: session.cookie,
     });
@@ -158,11 +173,16 @@ export class BookmarksService {
     threadId: string,
     session: SessionResource,
   ) {
-    const url = `${forumConfig.FORUM_URL}thread.php?TID=${threadId}&PID=${postId}`;
+    const url = buildForumUrl('thread.php', {
+      TID: threadId,
+      PID: postId,
+    });
     const { data } = await this.httpService.get(url, {
       cookie: session.cookie,
     });
-    const regex = new RegExp(`(?:(setBookmark\\(${postId}, ')([0-9a-f]*)')`);
+    const regex = new RegExp(
+      `(?:(setBookmark\\(${escapeRegExp(postId)}, ')([0-9a-f]*)')`,
+    );
     const tokenMatches = data.match(regex);
     if (tokenMatches && tokenMatches.length >= 3) {
       return tokenMatches[2];
@@ -182,7 +202,10 @@ export class BookmarksService {
       this.constructor.name,
     );
     const removeToken = await this.getRemoveToken(id, session);
-    const url = `${forumConfig.FORUM_URL}async/remove-bookmark.php?BMID=${id}&token=${removeToken}`;
+    const url = buildForumUrl('async/remove-bookmark.php', {
+      BMID: id,
+      token: removeToken,
+    });
     const { data } = await this.httpService.get(url, {
       cookie: session.cookie,
     });

@@ -14,7 +14,7 @@ export const appConfig = registerAs('application', () => ({
     },
   },
   auth: {
-    jwtSecret: process.env,
+    jwtSecret: process.env.AUTH_JWT_SECRET,
   },
 }));
 
