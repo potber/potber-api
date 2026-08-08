@@ -25,19 +25,43 @@ export class ResponseLoggingInterceptor implements NestInterceptor {
     const dateIn = new Date();
 
     return next.handle().pipe(
-      tap(() => {
-        const dateOut = new Date();
+      tap({
+        next: () => {
+          const dateOut = new Date();
 
-        Logger.verbose(
-          {
-            duration_ms: dateOut.getTime() - dateIn.getTime(),
-            message: 'Request fulfilled.',
-            method: req.method,
-            status_code: res.statusCode,
-            url: req.originalUrl,
-          },
-          'Response',
-        );
+          Logger.verbose(
+            {
+              duration_ms: dateOut.getTime() - dateIn.getTime(),
+              message: 'Request fulfilled.',
+              method: req.method,
+              path: req.path,
+              status_code: res.statusCode,
+            },
+            'Response',
+          );
+        },
+        error: (error: unknown) => {
+          const statusCode =
+            typeof error === 'object' &&
+            error !== null &&
+            'status' in error &&
+            typeof error.status === 'number'
+              ? error.status
+              : 500;
+
+          Logger.error(
+            {
+              duration_ms: new Date().getTime() - dateIn.getTime(),
+              error,
+              message: 'Request failed.',
+              method: req.method,
+              path: req.path,
+              status_code: statusCode,
+            },
+            undefined,
+            'Response',
+          );
+        },
       }),
     );
   }

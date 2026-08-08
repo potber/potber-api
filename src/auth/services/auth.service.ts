@@ -26,10 +26,7 @@ export class AuthService {
   ) {}
 
   async login(loginResource: LoginResource): Promise<JwtResource> {
-    Logger.log(
-      `User '${loginResource.username}' is attempting to log in.`,
-      this.constructor.name,
-    );
+    Logger.log({ message: 'Login attempt started.' }, this.constructor.name);
     const lifetime =
       typeof loginResource.lifetime === 'number'
         ? loginResource.lifetime
@@ -51,7 +48,10 @@ export class AuthService {
       const cookie = await this.getSessionCookie(cookieUrl);
       const session = await this.createSession(cookie);
       Logger.log(
-        `User '${session.username}' has signed in.`,
+        {
+          message: 'Login attempt succeeded.',
+          user_id: session.userId,
+        },
         this.constructor.name,
       );
       return {
@@ -60,7 +60,13 @@ export class AuthService {
         }),
       } as JwtResource;
     } catch (error) {
-      Logger.log(`Login attempt failed (${error}).`, this.constructor.name);
+      Logger.warn(
+        {
+          error,
+          message: 'Login attempt failed.',
+        },
+        this.constructor.name,
+      );
       throw error;
     }
   }

@@ -90,7 +90,12 @@ export class PostsService {
     session: SessionResource,
   ): Promise<PostReadResource> {
     Logger.log(
-      `User '${session.username}' (${session.userId}) is attempting to create a new post in thread '${post.threadId}'.`,
+      {
+        action: 'post.create',
+        message: 'Post creation started.',
+        thread_id: post.threadId,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     const url = `${forumConfig.FORUM_URL}newreply.php?TID=${post.threadId}`;
@@ -106,7 +111,13 @@ export class PostsService {
       session,
     );
     Logger.log(
-      `User '${session.username}' (${session.userId}) has created post '${result.id}' in thread '${result.threadId}'.`,
+      {
+        action: 'post.create',
+        message: 'Post created.',
+        post_id: result.id,
+        thread_id: result.threadId,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     return result;
@@ -118,7 +129,13 @@ export class PostsService {
     session: SessionResource,
   ): Promise<PostReadResource> {
     Logger.log(
-      `User '${session.username}' (${session.userId}) is attempting to edit post ${id} in thread '${post.threadId}'.`,
+      {
+        action: 'post.update',
+        message: 'Post update started.',
+        post_id: id,
+        thread_id: post.threadId,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     const url = `${forumConfig.FORUM_URL}editreply.php?PID=${id}`;
@@ -134,7 +151,13 @@ export class PostsService {
       session,
     );
     Logger.log(
-      `User '${session.username}' (${session.userId}) has edited post'${id}' in thread '${post.threadId}'.`,
+      {
+        action: 'post.update',
+        message: 'Post updated.',
+        post_id: id,
+        thread_id: post.threadId,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     return result;
