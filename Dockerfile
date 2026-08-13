@@ -25,5 +25,5 @@ RUN mkdir -p /data && chown 1000:1000 /data
 USER 1000
 
 # Start the server using the production build
-ENV NODE_OPTIONS="--enable-source-maps --require ./appsignal.cjs"
+ENV NODE_OPTIONS="--enable-source-maps"
 CMD ["node", "dist/main"]

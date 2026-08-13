@@ -1,4 +1,3 @@
-import { WinstonTransport } from '@appsignal/nodejs';
 import { WinstonModule } from 'nest-winston';
 import { appConfig } from 'src/config/app.config';
 import * as winston from 'winston';
@@ -40,15 +39,6 @@ export function createNestLogger() {
       ),
     }),
   ];
-
-  if (config.logging.appsignal.enabled) {
-    transports.push(
-      new WinstonTransport({
-        group: config.logging.appsignal.group,
-        level,
-      }),
-    );
-  }
 
   return WinstonModule.createLogger({
     level,
