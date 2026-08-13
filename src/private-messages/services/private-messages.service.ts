@@ -138,7 +138,14 @@ export class PrivateMessagesService {
         return this.parseMessageListItem(match[1], folder);
       } catch (error) {
         Logger.error(
-          `An error occured while parsing a private message header for user '${session.username}' (${error.message}). The message will be skipped.`,
+          {
+            error,
+            folder,
+            message:
+              'Unable to parse a private message header. The message will be skipped.',
+            user_id: session.userId,
+          },
+          undefined,
           this.constructor.name,
         );
         return undefined;

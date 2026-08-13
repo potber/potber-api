@@ -24,9 +24,10 @@ async function bootstrap() {
 
   // Set up CORS
   Logger.log(
-    `CORS enabled. The following origins will be allowed: '${
-      process.env.CORS_ALLOWED_ORIGINS ?? ''
-    }'.`,
+    {
+      allowed_origins: process.env.CORS_ALLOWED_ORIGINS ?? '',
+      message: 'CORS enabled.',
+    },
     'Bootstrap',
   );
   app.enableCors({
@@ -43,6 +44,12 @@ async function bootstrap() {
 
   const { port } = appConfig;
   await app.listen(port);
-  Logger.log(`Application is listening on port ${port}.`, 'Bootstrap');
+  Logger.log(
+    {
+      message: 'Application is listening.',
+      port,
+    },
+    'Bootstrap',
+  );
 }
 bootstrap();

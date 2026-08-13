@@ -120,7 +120,13 @@ export class BookmarksService {
    */
   async create(newBookmark: BookmarkCreateResource, session: SessionResource) {
     Logger.log(
-      `User '${session.username}' (${session.userId}) is attempting to create a bookmark on post '${newBookmark.postId}'.`,
+      {
+        action: 'bookmark.create',
+        message: 'Bookmark creation started.',
+        post_id: newBookmark.postId,
+        thread_id: newBookmark.threadId,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     const token = await this.getCreateToken(
@@ -147,7 +153,12 @@ export class BookmarksService {
       );
     }
     Logger.log(
-      `User '${session.username}' (${session.userId}) has created bookmark '${bookmark.id}'.`,
+      {
+        action: 'bookmark.create',
+        bookmark_id: bookmark.id,
+        message: 'Bookmark created.',
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     return bookmark;
@@ -178,7 +189,12 @@ export class BookmarksService {
    */
   async delete(id: string, session: SessionResource): Promise<void> {
     Logger.log(
-      `User '${session.username}' (${session.userId}) is attempting to delete bookmark '${id}'.`,
+      {
+        action: 'bookmark.delete',
+        bookmark_id: id,
+        message: 'Bookmark deletion started.',
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
     const removeToken = await this.getRemoveToken(id, session);
@@ -190,7 +206,12 @@ export class BookmarksService {
       throw new Error(`Unable to delete bookmark '${id}'.`);
     }
     Logger.log(
-      `User '${session.username}' (${session.userId}) has deleted bookmark '${id}'.`,
+      {
+        action: 'bookmark.delete',
+        bookmark_id: id,
+        message: 'Bookmark deleted.',
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
   }

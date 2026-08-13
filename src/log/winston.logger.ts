@@ -1,5 +1,5 @@
 import { WinstonTransport } from '@appsignal/nodejs';
-import { WinstonModule, utilities as nestWinstonUtilities } from 'nest-winston';
+import { WinstonModule } from 'nest-winston';
 import { appConfig } from 'src/config/app.config';
 import * as winston from 'winston';
 
@@ -14,7 +14,7 @@ const normalizeNestMetadata = winston.format((info) => {
   }
 
   if (info.error instanceof Error) {
-    info.error_name = info.error.name;
+    info.error_type = info.error.name;
     info.error_message = info.error.message;
 
     if (!info.stack && info.error.stack) {
@@ -36,8 +36,7 @@ export function createNestLogger() {
       level,
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.ms(),
-        nestWinstonUtilities.format.nestLike(appName),
+        winston.format.json(),
       ),
     }),
   ];
@@ -54,6 +53,7 @@ export function createNestLogger() {
   return WinstonModule.createLogger({
     level,
     defaultMeta: {
+      environment: process.env.NODE_ENV ?? 'development',
       service: appName,
     },
     format: winston.format.combine(

@@ -21,7 +21,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
           message: 'Incoming request.',
           method: req.method,
           origin: req.header('origin'),
-          url: req.originalUrl,
+          path: req.path,
         },
         'Request',
       );

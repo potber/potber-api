@@ -1,6 +1,7 @@
 import { HttpModuleOptions } from '@nestjs/axios';
 import { Logger } from '@nestjs/common';
 import { InternalAxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
+import { getLogPath } from 'src/log/log.utils';
 
 export const httpConfig: HttpModuleOptions = {
   timeout: 30000,
@@ -13,7 +14,7 @@ export function httpRequestInterceptor(
     {
       message: 'Outgoing request.',
       method: config.method?.toUpperCase(),
-      url: config.url,
+      path: getLogPath(config.url),
     },
     'Axios',
   );

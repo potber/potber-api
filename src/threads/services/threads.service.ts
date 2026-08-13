@@ -196,7 +196,12 @@ export class ThreadsService {
     session: SessionResource,
   ): Promise<ThreadReadResource> {
     Logger.log(
-      `User '${session.username}' (${session.userId}) is attempting to create a new thread in board '${thread.boardId}'.`,
+      {
+        action: 'thread.create',
+        board_id: thread.boardId,
+        message: 'Thread creation started.',
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
 
@@ -232,7 +237,13 @@ export class ThreadsService {
     const createdThread = await this.findById(threadId, session);
 
     Logger.log(
-      `User '${session.username}' (${session.userId}) has created thread '${createdThread.id}' in board '${createdThread.boardId}'.`,
+      {
+        action: 'thread.create',
+        board_id: createdThread.boardId,
+        message: 'Thread created.',
+        thread_id: createdThread.id,
+        user_id: session.userId,
+      },
       this.constructor.name,
     );
 
