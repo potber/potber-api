@@ -18,6 +18,7 @@ import { UsersModule } from './users/users.module';
 import { PrivateMessagesModule } from './private-messages/private-messages.module';
 import { RequestLoggingMiddleware } from './log/request.logging.middleware';
 import { MonitoringModule } from './monitoring/monitoring.module';
+import { UserConfigurationModule } from './user-configuration/user-configuration.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { MonitoringModule } from './monitoring/monitoring.module';
     BoardCategoriesModule,
     BookmarksModule,
     PrivateMessagesModule,
+    UserConfigurationModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -71,7 +71,33 @@ CORS_ALLOWED_ORIGINS=http://localhost:4200
 
 # Authentication
 AUTH_JWT_SECRET=***
+
+# Optional encrypted user-configuration sync (libSQL/Bunny Database)
+USER_CONFIG_DATABASE_URL=file:/data/local-user-configuration.db
+# Required for remote libSQL databases; omit for a local file URL.
+USER_CONFIG_DATABASE_AUTH_TOKEN=***
+
+# Optional per-process request limits for user-configuration sync.
+USER_CONFIG_RATE_LIMIT_WINDOW_MS=60000
+USER_CONFIG_RATE_LIMIT_READ_MAX=120
+USER_CONFIG_RATE_LIMIT_WRITE_MAX=30
+USER_CONFIG_RATE_LIMIT_IP_READ_MAX=2400
+USER_CONFIG_RATE_LIMIT_IP_WRITE_MAX=600
 ```
+
+If `USER_CONFIG_DATABASE_URL` is unset, the rest of the API remains available
+and `/user-configuration` returns `503`. The database stores only opaque
+client-encrypted ciphertext, its AES-GCM initialization vector, and revision
+metadata. Encryption keys and plaintext settings must never be sent to the API.
+The required table is created idempotently when the application starts.
+
+The Docker image exposes `/data` as a writable location for a local SQLite
+database. Mount persistent storage there and run only one API replica when using
+a `file:` URL. Use a remote libSQL database for replicated deployments.
+
+The user-configuration routes are rate-limited per authenticated user and source
+IP. Limits are enforced per API process; use an ingress or shared limiter as an
+additional layer when strict cluster-wide quotas are required.
 
 ### Running the app
 

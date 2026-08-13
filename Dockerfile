@@ -18,6 +18,9 @@ COPY . .
 # Creates a "dist" folder with the production build
 RUN npm run build
 
+# Local SQLite databases can be mounted below this writable directory.
+RUN mkdir -p /data && chown 1000:1000 /data
+
 # Run as non-root
 USER 1000
 
