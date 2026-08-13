@@ -4,7 +4,7 @@ const config = {
   modulePaths: ['<rootDir>'],
   testRegex: '.*\\.(?:spec|test)\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': [
+    '^.+\\.[cm]?[tj]s$': [
       '@swc/jest',
       {
         module: {
@@ -29,7 +29,9 @@ const config = {
       },
     ],
   },
-  transformIgnorePatterns: ['/node_modules/(?!(msw|until-async)/)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(msw|@open-draft|until-async|rettime)/)',
+  ],
   collectCoverageFrom: ['src/**/*.(t|j)s', 'src/*app*.(t|j)s'],
   coverageDirectory: '../coverage',
   modulePathIgnorePatterns: [
