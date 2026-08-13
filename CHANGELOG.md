@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.5.0] - 2026-08-13
+
+### Added
+
+- Store end-to-end encrypted user configuration
+
+### Chores
+
+- Update packages to latest version 
+
+## [3.4.0] - 2026-04-04
+
+### Chores
+
+- Allow preview origins in CORS
+- Update packages to latest version 
+
 ## [3.3.0] - 2026-03-08
 
 ### Fixed
