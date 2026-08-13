@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@appsignal/nodejs": "^3.7.4",
+    "@libsql/client": "^0.17.4",
     "@nanogiants/nestjs-swagger-api-exception-decorator": "^1.7.2",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "11.0.17",
