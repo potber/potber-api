@@ -38,6 +38,8 @@ To properly create and maintain a session, follow these steps:
 
 > 💡 Tip: Check the token at [jwt.io](https://jwt.io) to understand what it contains and when it will expire.
 
+Failed login attempts are throttled per account and source IP. When a client is temporarily blocked, `/auth/login` returns HTTP `429` and a `Retry-After` header indicating when another attempt can be made. The limiter is local to each API instance, so deployments with multiple replicas have a proportionally higher effective IP limit.
+
 ## Development
 
 ### Prerequisites

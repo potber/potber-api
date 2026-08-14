@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { appConfig } from 'src/config/app.config';
 import { corsConfig } from 'src/config/cors.config';
+import { LoginThrottleService } from './services/login-throttle.service';
 
 @Module({
   imports: [
@@ -30,6 +31,6 @@ import { corsConfig } from 'src/config/cors.config';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, LoginThrottleService],
 })
 export class AuthModule {}

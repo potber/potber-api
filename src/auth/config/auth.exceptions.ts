@@ -11,6 +11,7 @@ export const authExceptions = {
     lockedPermanently: new ForbiddenException(
       'The account has been locked permanently. potber-api does not support permenently locked accounts logging in.',
     ),
+    rateLimited: appExceptions.tooManyRequests,
   },
   validate: {
     invalidSession: new UnauthorizedException(
