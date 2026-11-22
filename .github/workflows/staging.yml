@@ -35,3 +35,7 @@ jobs:
       contents: read
       packages: write
     uses: potber/.github/.github/workflows/release_image.yml@v2
+    with:
+      bunny_app_id: ${{ vars.BUNNY_APP_ID_TEST }}
+    secrets:
+      BUNNYNET_API_KEY: ${{ secrets.BUNNYNET_API_KEY }}

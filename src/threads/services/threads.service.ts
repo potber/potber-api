@@ -187,7 +187,7 @@ export class ThreadsService {
   }
 
   /**
-   * Creates a new thread. See: https://spuxx-dev.github.io/mdexml/#newthread.php
+   * Creates a new thread.
    * @param thread The new thread and opening post.
    * @param session The session resource.
    */
