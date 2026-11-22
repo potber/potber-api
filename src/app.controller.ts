@@ -37,7 +37,7 @@ export class AppController {
   @Get('healthz')
   @ApiOperation({
     summary: 'Returns the current health of the API.',
-    description: `Returns the current health of the API. This is mainly used by kubernetes to check the server's status, but it can  also be used by clients to do the same.
+    description: `Returns the current health of the API. It can be used by health checks and clients alike.
 
     🔓 Open Access`,
   })
