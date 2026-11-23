@@ -9,6 +9,7 @@ import { HttpModule } from 'src/http/http.module';
 import { authHandlers } from 'test/msw/handlers/auth/auth.handlers';
 import { defaultMockSession } from 'test/mocks/session';
 import { TestContainer, createTestContainer } from 'test/container';
+import { LoginThrottleService } from '../services/login-throttle.service';
 
 describe('Auth | AuthController', () => {
   let container: TestContainer;
@@ -17,7 +18,7 @@ describe('Auth | AuthController', () => {
     container = await createTestContainer({
       imports: [HttpModule, EncodingModule, XmlApiModule, UsersModule],
       controllers: [AuthController],
-      providers: [AuthService, UsersService],
+      providers: [AuthService, UsersService, LoginThrottleService],
       enableEndToEnd: true,
     });
   });
@@ -53,6 +54,34 @@ describe('Auth | AuthController', () => {
         message: 'Login failed (possibly due to wrong credentials).',
         statusCode: 401,
       });
+    });
+
+    it('should throttle repeated failed logins for the same account', async () => {
+      container.mockServer.use(...authHandlers.login.failure);
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const response = await fakeRequest(
+          container.app,
+          'POST',
+          '/auth/login',
+        ).send({
+          username: 'Foo',
+          password: 'Bar',
+          lifetime: 3600,
+        });
+        expect(response.statusCode).toBe(401);
+      }
+
+      const response = await fakeRequest(
+        container.app,
+        'POST',
+        '/auth/login',
+      ).send({
+        username: 'foo',
+        password: 'Bar',
+        lifetime: 3600,
+      });
+      expect(response.statusCode).toBe(429);
+      expect(response.headers['retry-after']).toBe('60');
     });
 
     it('should fail with 403 if the user account has been locked permanently', async () => {

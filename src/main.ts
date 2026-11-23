@@ -12,11 +12,16 @@ import { ResponseLoggingInterceptor } from './log/response.logging.interceptor';
 import { AppConfig } from './config/app.config';
 import { CorsConfig } from './config/cors.config';
 import { createNestLogger } from './log/winston.logger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: createNestLogger(),
   });
+
+  // ingress-nginx is the only externally reachable proxy in front of the API.
+  // Trust exactly that hop so request.ip resolves to the originating client.
+  app.set('trust proxy', 1);
 
   const configService = app.get(ConfigService);
   const appConfig = configService.get<ConfigType<AppConfig>>('application');
